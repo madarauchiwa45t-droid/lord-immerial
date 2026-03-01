@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>LORD-IMPERIAL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00d4ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LORD-IMPERIAL">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+<meta name="msapplication-TileImage" content="icons/icon-144.png">
+<meta name="msapplication-TileColor" content="#000000">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #00d4ff;
+  --secondary: #8b5cf6;
+  --accent: #ff006e;
+  --gold: #ffd700;
+  --dark: #000000;
+  --card: #111111;
+  --card2: #161616;
+  --input-bg: #1a1a1a;
+  --text: #ffffff;
+  --text-secondary: #888888;
+  --border: #2a2a2a;
+  --success: #10b981;
+  --danger: #ff006e;
+}
+
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== UTILS ===== */
+.hidden { display: none !important; }
+
+/* ===== AUTH ===== */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 24px;
+  background: var(--dark);
+  position: relative;
+  overflow: hidden;
+}
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: -120px; left: 50%;
+  transform: translateX(-50%);
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.auth-header {
+  text-align: center;
+  margin-bottom: 40px;
+  margin-top: 20px;
+}
+.auth-logo {
+  font-size: 44px;
+  font-weight: 900;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.auth-logo-crown {
+  font-size: 28px;
+  display: block;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.auth-header p { color: var(--text-secondary); font-size: 15px; margin-top: 8px; }
+.auth-form { display: flex; flex-direction: column; gap: 18px; flex: 1; }
+.form-group { display: flex; flex-direction: column; gap: 7px; }
+.form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.form-group input, .form-group textarea, .form-group select {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  width: 100%;
+  font-family: inherit;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+}
+.form-group select { appearance: none; cursor: pointer; }
+.password-wrapper { position: relative; }
+.password-wrapper input { padding-right: 50px; }
+.toggle-password {
+  position: absolute; right: 14px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  color: var(--text-secondary); cursor: pointer;
+  font-size: 17px; padding: 0;
+  transition: color 0.3s;
+}
+.toggle-password:hover { color: var(--primary); }
+.btn-primary {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border: none; border-radius: 12px; padding: 16px;
+  color: white; font-size: 15px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; gap: 10px;
+  margin-top: 8px; transition: all 0.3s;
+  box-shadow: 0 4px 20px rgba(0,212,255,0.25);
+  width: 100%;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(0,212,255,0.4); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary {
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 20px;
+  color: var(--text); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+.btn-danger {
+  background: rgba(255,0,110,0.1); border: 1px solid var(--accent);
+  border-radius: 12px; padding: 12px 20px;
+  color: var(--accent); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.btn-danger:hover { background: rgba(255,0,110,0.2); }
+.auth-footer { text-align: center; margin-top: 25px; color: var(--text-secondary); font-size: 14px; }
+.auth-footer a { color: var(--primary); text-decoration: none; font-weight: 700; cursor: pointer; }
+.auth-footer a:hover { text-decoration: underline; }
+.error-message {
+  color: var(--accent); font-size: 13px; text-align: center;
+  padding: 10px; background: rgba(255,0,110,0.08);
+  border-radius: 8px; border: 1px solid rgba(255,0,110,0.2); display: none;
+}
+.success-message {
+  color: var(--success); font-size: 13px; text-align: center;
+  padding: 10px; background: rgba(16,185,129,0.08);
+  border-radius: 8px; border: 1px solid rgba(16,185,129,0.2); display: none;
+}
+
+/* ===== MAIN APP ===== */
+#app { display: none; min-height: 100vh; padding-bottom: 80px; }
+.page { display: none; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== HEADER ===== */
+.app-header {
+  position: sticky; top: 0;
+  background: rgba(0,0,0,0.96);
+  backdrop-filter: blur(20px);
+  padding: 13px 18px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+.header-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 18px; font-weight: 900;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+.header-logo i { font-size: 18px; -webkit-text-fill-color: var(--gold); }
+.header-actions { display: flex; gap: 18px; align-items: center; }
+.header-actions i {
+  font-size: 20px; color: var(--text-secondary);
+  cursor: pointer; transition: color 0.3s;
+  position: relative;
+}
+.header-actions i:hover { color: var(--primary); }
+.notif-badge {
+  position: absolute; top: -4px; right: -5px;
+  width: 16px; height: 16px;
+  background: var(--accent); border-radius: 50%;
+  font-size: 9px; display: flex; align-items: center;
+  justify-content: center; font-weight: 700;
+  border: 2px solid #000;
+}
+
+/* ===== TABS ===== */
+.tabs { display: flex; padding: 0 20px; border-bottom: 1px solid var(--border); }
+.tab {
+  flex: 1; padding: 14px; text-align: center;
+  color: var(--text-secondary); cursor: pointer;
+  position: relative; font-weight: 600;
+  font-size: 14px; transition: color 0.3s;
+}
+.tab.active { color: var(--primary); }
+.tab.active::after {
+  content: ''; position: absolute; bottom: 0;
+  left: 20%; width: 60%; height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 2px 2px 0 0;
+}
+
+/* ===== STORIES ===== */
+.stories-container {
+  padding: 16px 16px 10px;
+  display: flex; gap: 14px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.stories-container::-webkit-scrollbar { display: none; }
+.story {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 7px;
+  min-width: 68px; cursor: pointer;
+}
+.story-avatar {
+  width: 66px; height: 66px; border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  padding: 2.5px; transition: transform 0.2s;
+}
+.story:hover .story-avatar { transform: scale(1.06); }
+.story-avatar-inner {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: var(--card2);
+  display: flex; align-items: center;
+  justify-content: center; font-size: 22px;
+  font-weight: 700; border: 2.5px solid #000; overflow: hidden;
+}
+.story-avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
+.add-story-btn {
+  background: var(--input-bg);
+  border: 2px dashed var(--border) !important;
+}
+.story-name {
+  font-size: 11px; color: var(--text-secondary);
+  max-width: 68px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+  text-align: center;
+}
+
+/* ===== FEED / POSTS ===== */
+.feed { padding: 0 14px; }
+.post {
+  background: var(--card);
+  border-radius: 18px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color 0.3s;
+}
+.post:hover { border-color: rgba(0,212,255,0.2); }
+.post-header {
+  padding: 13px 15px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+}
+.post-user { display: flex; align-items: center; gap: 11px; }
+.post-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  display: flex; align-items: center;
+  justify-content: center; font-weight: 700;
+  font-size: 17px; overflow: hidden; flex-shrink: 0;
+  cursor: pointer;
+}
+.post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.post-info h3 {
+  font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; gap: 5px;
+  cursor: pointer;
+}
+.post-info h3:hover { color: var(--primary); }
+.post-info span { font-size: 12px; color: var(--text-secondary); }
+.verified { color: var(--primary); font-size: 13px; }
+.imperial-badge { color: var(--gold); font-size: 13px; }
+.post-menu {
+  color: var(--text-secondary); cursor: pointer;
+  padding: 5px; font-size: 18px;
+  transition: color 0.3s;
+}
+.post-menu:hover { color: var(--text); }
+.post-content {
+  width: 100%; aspect-ratio: 1;
+  background: linear-gradient(135deg, #0d0d1a 0%, #0a0a14 100%);
+  position: relative; display: flex;
+  align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.post-content.no-image {
+  aspect-ratio: unset;
+  min-height: 120px; padding: 25px;
+  background: linear-gradient(135deg, #111122 0%, #0a0a18 100%);
+}
+.post-content img { width: 100%; height: 100%; object-fit: cover; }
+.post-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%);
+  display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 18px;
+}
+.post-title {
+  font-size: 24px; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  background: linear-gradient(90deg, var(--primary), #fff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+.post-text {
+  color: rgba(255,255,255,0.8);
+  font-size: 13px; margin-top: 6px;
+  line-height: 1.5; word-break: break-word;
+}
+.post-badge {
+  display: inline-block; padding: 6px 14px;
+  background: rgba(0,212,255,0.15);
+  border: 1px solid rgba(0,212,255,0.4);
+  border-radius: 20px; font-size: 11px;
+  font-weight: 700; color: var(--primary);
+  text-transform: uppercase; margin-top: 10px;
+  width: fit-content;
+}
+.post-badge.gold {
+  background: rgba(255,215,0,0.15);
+  border-color: rgba(255,215,0,0.4);
+  color: var(--gold);
+}
+.post-badge.purple {
+  background: rgba(139,92,246,0.15);
+  border-color: rgba(139,92,246,0.4);
+  color: var(--secondary);
+}
+.no-image-content {
+  text-align: left; width: 100%;
+}
+.no-image-content .post-title { font-size: 20px; }
+.post-actions {
+  padding: 12px 15px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+}
+.post-actions-left { display: flex; gap: 18px; align-items: center; }
+.action-btn {
+  background: none; border: none;
+  display: flex; align-items: center;
+  gap: 5px; color: var(--text-secondary);
+  cursor: pointer; font-size: 13px;
+  transition: all 0.25s; padding: 0;
+  font-family: inherit;
+}
+.action-btn i { font-size: 22px; transition: transform 0.2s; }
+.action-btn:hover { color: var(--primary); }
+.action-btn:hover i { transform: scale(1.15); }
+.action-btn.liked { color: var(--accent); }
+.action-btn.liked i { animation: heartPop 0.3s ease; }
+.action-btn.bookmarked { color: var(--gold); }
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.post-stats {
+  padding: 0 15px 13px;
+  font-size: 13px; color: var(--text-secondary);
+}
+.post-stats strong { color: var(--text); }
+
+/* ===== COMMENTS ===== */
+.comments-section {
+  padding: 0 15px 15px;
+  border-top: 1px solid var(--border);
+}
+.comments-list {
+  max-height: 300px; overflow-y: auto;
+  padding-top: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.comment {
+  display: flex; gap: 10px; margin-bottom: 12px;
+  animation: fadeIn 0.2s ease;
+}
+.comment-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  display: flex; align-items: center;
+  justify-content: center; font-size: 12px;
+  font-weight: 700; flex-shrink: 0;
+}
+.comment-bubble {
+  background: var(--input-bg);
+  border-radius: 0 12px 12px 12px;
+  padding: 8px 12px; flex: 1;
+}
+.comment-author { font-weight: 700; font-size: 12px; color: var(--primary); margin-bottom: 3px; }
+.comment-text { color: var(--text); font-size: 13px; line-height: 1.4; word-break: break-word; }
+.comment-time { font-size: 10px; color: var(--text-secondary); margin-top: 3px; }
+.comment-input-wrapper {
+  display: flex; gap: 10px; margin-top: 12px;
+  padding-top: 12px; border-top: 1px solid var(--border);
+  align-items: center;
+}
+.comment-input {
+  flex: 1; background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 10px 16px;
+  color: var(--text); font-size: 13px; outline: none;
+  transition: border-color 0.3s; font-family: inherit;
+}
+.comment-input:focus { border-color: var(--primary); }
+.send-btn {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border: none; border-radius: 50%;
+  width: 38px; height: 38px; color: white;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  transition: transform 0.2s; flex-shrink: 0;
+}
+.send-btn:hover { transform: scale(1.1); }
+
+/* ===== PROFILE ===== */
+.profile-header { padding: 20px; text-align: center; }
+.profile-avatar-large {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary), var(--gold));
+  padding: 3px; margin: 0 auto 14px;
+}
+.profile-avatar-inner {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: var(--card2);
+  display: flex; align-items: center;
+  justify-content: center; font-size: 36px;
+  font-weight: 900; border: 3px solid #000; overflow: hidden;
+}
+.profile-avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
+.profile-stats {
+  display: flex; justify-content: center;
+  gap: 0; margin: 18px 0;
+  background: var(--card2); border-radius: 14px;
+  border: 1px solid var(--border); overflow: hidden;
+}
+.stat {
+  flex: 1; text-align: center; cursor: pointer;
+  padding: 14px 10px; transition: background 0.2s;
+  border-right: 1px solid var(--border);
+}
+.stat:last-child { border-right: none; }
+.stat:hover { background: rgba(0,212,255,0.05); }
+.stat-value { font-size: 22px; font-weight: 800; display: block; color: var(--text); }
+.stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.profile-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.profile-handle { color: var(--text-secondary); font-size: 13px; margin-bottom: 8px; }
+.profile-bio { color: var(--text-secondary); font-size: 13px; padding: 0 20px; line-height: 1.5; }
+.profile-clan {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(139,92,246,0.15);
+  color: var(--secondary); padding: 6px 14px;
+  border-radius: 20px; font-size: 12px;
+  font-weight: 700; margin-top: 10px;
+  border: 1px solid rgba(139,92,246,0.3);
+}
+.profile-actions { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
+.edit-profile-btn {
+  padding: 10px 24px; background: transparent;
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.3s; flex: 1; max-width: 180px;
+}
+.edit-profile-btn:hover { border-color: var(--primary); color: var(--primary); }
+.follow-btn {
+  padding: 10px 24px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border: none; border-radius: 10px; color: white;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: all 0.3s; flex: 1; max-width: 180px;
+}
+.follow-btn.following {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text);
+}
+.profile-tabs {
+  display: flex; border-top: 1px solid var(--border); margin-top: 20px;
+}
+.profile-tab {
+  flex: 1; padding: 14px; text-align: center;
+  color: var(--text-secondary); cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.3s;
+  font-size: 13px; font-weight: 600;
+}
+.profile-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.profile-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 2px; padding: 2px;
+}
+.profile-grid-item {
+  aspect-ratio: 1;
+  background: var(--card2);
+  display: flex; align-items: center;
+  justify-content: center; overflow: hidden;
+  cursor: pointer; position: relative;
+}
+.profile-grid-item img { width: 100%; height: 100%; object-fit: cover; }
+.profile-grid-item-placeholder {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 5px;
+  color: var(--border); font-size: 10px;
+}
+.profile-grid-item-placeholder i { font-size: 22px; }
+.profile-empty {
+  padding: 40px 20px; text-align: center;
+  color: var(--text-secondary);
+}
+.profile-empty i { font-size: 50px; margin-bottom: 14px; opacity: 0.25; display: block; }
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.98);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-around;
+  padding: 8px 0 12px; z-index: 100;
+}
+.nav-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px; color: var(--text-secondary);
+  text-decoration: none; font-size: 10px;
+  transition: all 0.25s; cursor: pointer;
+  padding: 4px 12px; background: none;
+  border: none; font-family: inherit;
+  position: relative;
+}
+.nav-item i { font-size: 21px; transition: transform 0.2s; }
+.nav-item.active { color: var(--primary); }
+.nav-item.active i { transform: scale(1.1); }
+.nav-item span { font-weight: 600; }
+
+/* ===== MODAL ===== */
+.modal {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92); z-index: 1000;
+  align-items: flex-end; justify-content: center;
+  padding: 0;
+}
+.modal.active { display: flex; animation: fadeIn 0.2s ease; }
+.modal-sheet {
+  background: var(--card);
+  border-radius: 20px 20px 0 0;
+  width: 100%; max-height: 90vh;
+  overflow-y: auto; padding: 20px;
+  border-top: 1px solid var(--border);
+}
+.modal-handle {
+  width: 40px; height: 4px;
+  background: var(--border); border-radius: 2px;
+  margin: 0 auto 18px;
+}
+.modal-center { align-items: center; padding: 20px; }
+.modal-box {
+  background: var(--card); border-radius: 20px;
+  width: 100%; max-width: 420px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.modal-header {
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header h3 { font-size: 17px; font-weight: 700; }
+.close-modal {
+  background: none; border: none;
+  color: var(--text-secondary); font-size: 22px;
+  cursor: pointer; transition: color 0.3s; padding: 0;
+}
+.close-modal:hover { color: var(--text); }
+.modal-body { padding: 20px; }
+.setting-item {
+  display: flex; align-items: center;
+  justify-content: space-between; padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: color 0.25s;
+}
+.setting-item:hover { color: var(--primary); }
+.setting-item:last-child { border-bottom: none; }
+.setting-item-left { display: flex; align-items: center; gap: 14px; }
+.setting-item i { font-size: 18px; width: 26px; color: var(--text-secondary); }
+.setting-item:hover i { color: var(--primary); }
+.setting-item .danger { color: var(--accent) !important; }
+.setting-item-right { color: var(--text-secondary); font-size: 13px; }
+
+/* ===== EXPLORE ===== */
+.search-bar {
+  position: relative; padding: 14px 16px 10px;
+}
+.search-bar input {
+  width: 100%; background: var(--input-bg);
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 16px 12px 42px;
+  color: var(--text); font-size: 14px; outline: none;
+  transition: border-color 0.3s; font-family: inherit;
+}
+.search-bar input:focus { border-color: var(--primary); }
+.search-bar i {
+  position: absolute; left: 28px; top: 50%;
+  transform: translateY(-50%); color: var(--text-secondary);
+  font-size: 15px;
+}
+.user-card {
+  display: flex; align-items: center;
+  gap: 14px; padding: 13px 16px;
+  cursor: pointer; transition: background 0.2s;
+  border-bottom: 1px solid var(--border);
+}
+.user-card:hover { background: rgba(255,255,255,0.03); }
+.user-card:last-child { border-bottom: none; }
+.user-card-avatar {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  display: flex; align-items: center;
+  justify-content: center; font-weight: 700;
+  font-size: 18px; flex-shrink: 0;
+}
+.user-card-info { flex: 1; }
+.user-card-name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.user-card-username { color: var(--text-secondary); font-size: 12px; }
+.user-card-clan {
+  font-size: 11px; color: var(--secondary);
+  font-weight: 600;
+}
+.follow-chip {
+  padding: 7px 16px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border: none; border-radius: 20px; color: white;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: all 0.25s; white-space: nowrap;
+  font-family: inherit;
+}
+.follow-chip.following {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+/* ===== CREATE ===== */
+.create-wrap { padding: 18px; }
+.create-textarea {
+  width: 100%; background: var(--input-bg);
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; color: var(--text);
+  font-size: 14px; resize: none; min-height: 130px;
+  font-family: inherit; line-height: 1.5; outline: none;
+  transition: border-color 0.3s;
+}
+.create-textarea:focus { border-color: var(--primary); }
+.image-upload {
+  margin-top: 14px; padding: 30px;
+  border: 2px dashed var(--border);
+  border-radius: 12px; text-align: center;
+  color: var(--text-secondary); cursor: pointer;
+  transition: all 0.3s;
+}
+.image-upload:hover { border-color: var(--primary); color: var(--primary); }
+.image-upload i { font-size: 36px; margin-bottom: 8px; display: block; }
+.image-preview-wrap { margin-top: 14px; position: relative; display: none; }
+.image-preview-wrap img { max-width: 100%; border-radius: 12px; display: block; }
+.remove-image-btn {
+  position: absolute; top: 8px; right: 8px;
+  background: rgba(0,0,0,0.7); border: none;
+  color: white; border-radius: 50%; width: 30px; height: 30px;
+  cursor: pointer; font-size: 14px; display: flex;
+  align-items: center; justify-content: center;
+}
+.badge-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.badge-option {
+  padding: 6px 14px; border-radius: 20px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-secondary); font-size: 12px;
+  font-weight: 600; cursor: pointer; transition: all 0.2s;
+  font-family: inherit;
+}
+.badge-option.selected { border-color: var(--primary); color: var(--primary); background: rgba(0,212,255,0.1); }
+.char-counter { text-align: right; font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+/* ===== LOOP ===== */
+.loop-page { padding: 18px; }
+.loop-card {
+  background: var(--card); border-radius: 16px;
+  border: 1px solid var(--border); overflow: hidden;
+  margin-bottom: 16px;
+}
+.loop-thumb {
+  width: 100%; aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #0d0d1a, #0a0a14);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.loop-play-btn {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(0,212,255,0.2);
+  border: 2px solid var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.3s;
+}
+.loop-play-btn:hover { background: rgba(0,212,255,0.35); transform: scale(1.1); }
+.loop-play-btn i { font-size: 24px; color: var(--primary); margin-left: 3px; }
+.loop-info { padding: 14px; }
+.loop-title { font-weight: 700; margin-bottom: 4px; }
+.loop-meta { font-size: 12px; color: var(--text-secondary); }
+.loop-coming-badge {
+  display: inline-block; padding: 4px 10px;
+  background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3);
+  border-radius: 10px; font-size: 10px; font-weight: 700;
+  color: var(--gold); text-transform: uppercase; margin-left: 8px;
+}
+
+/* ===== CHAT ===== */
+.chat-list { padding: 0; }
+.chat-item {
+  display: flex; align-items: center;
+  gap: 14px; padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.2s;
+}
+.chat-item:hover { background: rgba(255,255,255,0.03); }
+.chat-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 20px; flex-shrink: 0;
+}
+.chat-info { flex: 1; overflow: hidden; }
+.chat-name { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+.chat-preview { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-time { font-size: 11px; color: var(--text-secondary); flex-shrink: 0; }
+.chat-window {
+  display: flex; flex-direction: column;
+  height: calc(100vh - 136px);
+}
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.msg-row { display: flex; align-items: flex-end; gap: 8px; }
+.msg-row.mine { flex-direction: row-reverse; }
+.msg-bubble {
+  max-width: 70%; padding: 10px 14px;
+  border-radius: 18px; font-size: 14px; line-height: 1.5;
+  background: var(--card2); border: 1px solid var(--border);
+  word-break: break-word;
+}
+.msg-row.mine .msg-bubble {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  color: white; border: none;
+}
+.msg-time { font-size: 10px; color: var(--text-secondary); margin-bottom: 4px; white-space: nowrap; }
+.chat-input-bar {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px; align-items: center;
+  background: var(--dark);
+}
+.chat-msg-input {
+  flex: 1; background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 22px; padding: 11px 16px;
+  color: var(--text); font-size: 14px;
+  outline: none; font-family: inherit;
+  transition: border-color 0.3s;
+}
+.chat-msg-input:focus { border-color: var(--primary); }
+
+/* ===== NOTIFICATIONS ===== */
+.notif-item {
+  display: flex; align-items: flex-start;
+  gap: 13px; padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.2s;
+}
+.notif-item:hover { background: rgba(255,255,255,0.02); }
+.notif-item.unread { background: rgba(0,212,255,0.04); }
+.notif-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 16px; flex-shrink: 0;
+}
+.notif-content { flex: 1; }
+.notif-text { font-size: 13px; line-height: 1.4; color: var(--text); }
+.notif-text strong { color: var(--primary); }
+.notif-time { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+.notif-icon {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.notif-icon.like { background: rgba(255,0,110,0.15); color: var(--accent); }
+.notif-icon.follow { background: rgba(0,212,255,0.15); color: var(--primary); }
+.notif-icon.comment { background: rgba(139,92,246,0.15); color: var(--secondary); }
+
+/* ===== USER PROFILE MODAL ===== */
+.view-profile-content { padding: 20px; }
+.view-profile-header { text-align: center; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.view-profile-stats {
+  display: flex; justify-content: center;
+  gap: 0; margin: 16px 0;
+  background: var(--card2); border-radius: 12px;
+  border: 1px solid var(--border); overflow: hidden;
+}
+.view-profile-stat { flex: 1; text-align: center; padding: 12px 8px; border-right: 1px solid var(--border); }
+.view-profile-stat:last-child { border-right: none; }
+.view-profile-stat-value { font-size: 18px; font-weight: 800; display: block; }
+.view-profile-stat-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; }
+
+/* ===== FOLLOWERS/FOLLOWING LIST ===== */
+.follow-list-item {
+  display: flex; align-items: center;
+  gap: 13px; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.follow-list-item:last-child { border-bottom: none; }
+.follow-list-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 17px; flex-shrink: 0;
+}
+
+/* ===== TOAST ===== */
+#toast-container {
+  position: fixed; bottom: 90px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999; display: flex;
+  flex-direction: column; gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 20px;
+  font-size: 13px; font-weight: 600;
+  white-space: nowrap; animation: toastIn 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.toast.success { border-color: var(--success); color: var(--success); }
+.toast.error { border-color: var(--accent); color: var(--accent); }
+.toast.info { border-color: var(--primary); color: var(--primary); }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center; padding: 60px 20px;
+  color: var(--text-secondary);
+}
+.empty-state i { font-size: 56px; margin-bottom: 16px; opacity: 0.2; display: block; }
+.empty-state p { font-size: 15px; margin-bottom: 20px; }
+
+/* ===== PWA INSTALL BUTTON ===== */
+#pwa-install-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  z-index: 9999;
+  background: linear-gradient(135deg, #00d4ff, #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+  animation: pulse-install 2s infinite;
+  transition: all 0.3s;
+}
+#pwa-install-btn:hover { transform: scale(1.05); box-shadow: 0 6px 30px rgba(0,212,255,0.6); }
+@keyframes pulse-install {
+  0%, 100% { box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4); }
+  50% { box-shadow: 0 4px 30px rgba(0, 212, 255, 0.7); }
+}
+#pwa-offline-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: linear-gradient(90deg, #ff006e, #8b5cf6);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 99999;
+  display: none;
+}
+#pwa-offline-banner.show { display: block; }
+#pwa-update-banner {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(90deg, #00d4ff, #8b5cf6);
+  color: white;
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 99999;
+  display: none;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+#pwa-update-banner.show { display: flex; }
+#pwa-update-banner button {
+  background: white;
+  color: #000;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+<!-- PWA Offline Banner -->
+<div id="pwa-offline-banner">
+  <i class="fas fa-wifi-slash"></i> Mode hors-ligne - Données locales uniquement
+</div>
+
+<!-- PWA Update Banner -->
+<div id="pwa-update-banner">
+  <span>🆕 Mise à jour disponible !</span>
+  <button onclick="applyUpdate()">Mettre à jour</button>
+</div>
+
+<!-- PWA Install Button -->
+<button id="pwa-install-btn" onclick="installPWA()" style="display:none;">
+  <i class="fas fa-download"></i> Installer l'app
+</button>
+
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- ==================== AUTH ==================== -->
+<div id="page-login" class="auth-container">
+  <div class="auth-header">
+    <span class="auth-logo-crown">👑</span>
+    <div class="auth-logo">LORD-IMPERIAL</div>
+    <p>Connecte-toi à ton empire</p>
+  </div>
+  <form class="auth-form" onsubmit="handleLogin(event)">
+    <div class="form-group">
+      <label>Email ou Nom d'utilisateur</label>
+      <input type="text" id="login-email" placeholder="ton@email.com ou @pseudo" required autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <div class="password-wrapper">
+        <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+        <button type="button" class="toggle-password" onclick="togglePassword('login-password')">
+          <i class="far fa-eye"></i>
+        </button>
+      </div>
+    </div>
+    <div class="error-message" id="login-error"></div>
+    <button type="submit" class="btn-primary">
+      <i class="fas fa-sign-in-alt"></i> Se connecter
+    </button>
+  </form>
+  <div class="auth-footer">
+    Pas encore de compte ? <a onclick="showPage('register')">S'inscrire</a><br>
+    <a onclick="loginDemo()" style="color:var(--text-secondary); font-size:12px; margin-top:8px; display:inline-block;">Essayer le compte démo</a>
+  </div>
+</div>
+
+<div id="page-register" class="auth-container hidden">
+  <div class="auth-header">
+    <span class="auth-logo-crown">👑</span>
+    <div class="auth-logo">LORD-IMPERIAL</div>
+    <p>Rejoins l'empire</p>
+  </div>
+  <form class="auth-form" onsubmit="handleRegister(event)">
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="reg-email" placeholder="ton@email.com" required autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Nom d'utilisateur</label>
+      <input type="text" id="reg-username" placeholder="@tonpseudo" required oninput="formatUsername(this)">
+    </div>
+    <div class="form-group">
+      <label>Clan (Optionnel)</label>
+      <input type="text" id="reg-clan" placeholder="Nom de ton clan">
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <div class="password-wrapper">
+        <input type="password" id="reg-password" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+        <button type="button" class="toggle-password" onclick="togglePassword('reg-password')">
+          <i class="far fa-eye"></i>
+        </button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Confirmer le mot de passe</label>
+      <input type="password" id="reg-confirm" placeholder="••••••••" required autocomplete="new-password">
+    </div>
+    <div class="error-message" id="register-error"></div>
+    <div class="success-message" id="register-success"></div>
+    <button type="submit" class="btn-primary">
+      <i class="fas fa-crown"></i> Rejoindre l'empire
+    </button>
+  </form>
+  <div class="auth-footer">
+    Déjà un compte ? <a onclick="showPage('login')">Se connecter</a>
+  </div>
+</div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div id="app">
+
+  <!-- ===== HOME ===== -->
+  <div id="page-home" class="page active">
+    <header class="app-header">
+      <div class="header-logo">
+        <i class="fas fa-crown"></i>
+        <span>LORD-IMPERIAL</span>
+      </div>
+      <div class="header-actions">
+        <i class="far fa-bell" onclick="navigate('notifs')" id="notif-icon" title="Notifications">
+          <span class="notif-badge hidden" id="notif-badge">0</span>
+        </i>
+      </div>
+    </header>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'for-you')">Pour toi</div>
+      <div class="tab" onclick="switchTab(this,'following')">Abonnements</div>
+    </div>
+    <div class="stories-container" id="stories-list">
+      <div class="story" onclick="myAddStory()">
+        <div class="story-avatar">
+          <div class="story-avatar-inner add-story-btn" id="my-story-avatar">
+            <i class="fas fa-plus" style="color:var(--primary);"></i>
+          </div>
+        </div>
+        <span class="story-name">Ajouter</span>
+      </div>
+    </div>
+    <div class="feed" id="feed"></div>
+  </div>
+
+  <!-- ===== EXPLORE ===== -->
+  <div id="page-explore" class="page">
+    <header class="app-header">
+      <div class="header-logo"><i class="fas fa-crown"></i><span>Explorer</span></div>
+    </header>
+    <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input type="text" id="search-input" placeholder="Rechercher un utilisateur..." oninput="searchUsers(this.value)">
+    </div>
+    <div id="search-results"></div>
+  </div>
+
+  <!-- ===== CREATE ===== -->
+  <div id="page-create" class="page">
+    <header class="app-header">
+      <div class="header-logo"><i class="fas fa-crown"></i><span>Créer</span></div>
+    </header>
+    <div class="create-wrap">
+      <div class="form-group" style="margin-bottom:14px;">
+        <label>Titre du post</label>
+        <input type="text" id="post-title" placeholder="Titre accrocheur..." maxlength="60">
+      </div>
+      <div class="form-group" style="margin-bottom:4px;">
+        <label>Contenu</label>
+        <textarea id="post-content" class="create-textarea" placeholder="Qu'est-ce qui te passe par la tête ?" maxlength="500" oninput="updateCharCount(this)"></textarea>
+        <div class="char-counter"><span id="char-count">0</span>/500</div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px;">
+        <label>Badge (optionnel)</label>
+        <div class="badge-picker" id="badge-picker">
+          <button type="button" class="badge-option" onclick="selectBadge(this,'')">Aucun</button>
+          <button type="button" class="badge-option" onclick="selectBadge(this,'Imperial Lord')">👑 Imperial Lord</button>
+          <button type="button" class="badge-option" onclick="selectBadge(this,'Top Clan')">🛡️ Top Clan</button>
+          <button type="button" class="badge-option" onclick="selectBadge(this,'Rising Star')">⭐ Rising Star</button>
+          <button type="button" class="badge-option" onclick="selectBadge(this,'OG Member')">🔥 OG Member</button>
+          <button type="button" class="badge-option" onclick="selectBadge(this,'Multi Device')">📱 Multi Device</button>
+        </div>
+      </div>
+      <div class="image-upload" onclick="document.getElementById('post-image').click()">
+        <i class="fas fa-image"></i>
+        <span>Ajouter une image</span>
+        <input type="file" id="post-image" accept="image/*" style="display:none;" onchange="previewImage(this)">
+      </div>
+      <div class="image-preview-wrap" id="image-preview-wrap">
+        <img id="post-preview-img">
+        <button class="remove-image-btn" onclick="removeImage()"><i class="fas fa-times"></i></button>
+      </div>
+      <button class="btn-primary" style="margin-top:20px;" onclick="createPost()">
+        <i class="fas fa-paper-plane"></i> Publier
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== LOOP ===== -->
+  <div id="page-loop" class="page">
+    <header class="app-header">
+      <div class="header-logo"><i class="fas fa-crown"></i><span>Loop</span></div>
+    </header>
+    <div class="loop-page">
+      <p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">
+        Courtes vidéos de la communauté <span class="loop-coming-badge">Bientôt</span>
+      </p>
+      <div class="loop-card">
+        <div class="loop-thumb">
+          <div class="loop-play-btn"><i class="fas fa-play"></i></div>
+        </div>
+        <div class="loop-info">
+          <div class="loop-title">Clip de gameplay épique</div>
+          <div class="loop-meta"><span style="color:var(--primary);">@MagmaDeath</span> · 12K vues</div>
+        </div>
+      </div>
+      <div class="loop-card">
+        <div class="loop-thumb" style="background:linear-gradient(135deg,#0d1a0d,#0a140a);">
+          <div class="loop-play-btn"><i class="fas fa-play"></i></div>
+        </div>
+        <div class="loop-info">
+          <div class="loop-title">Best moments saison 3</div>
+          <div class="loop-meta"><span style="color:var(--primary);">@Sasuke</span> · 8.4K vues</div>
+        </div>
+      </div>
+      <div style="text-align:center;padding:30px 0;color:var(--text-secondary);font-size:13px;">
+        <i class="fas fa-video" style="font-size:40px;opacity:0.2;display:block;margin-bottom:12px;"></i>
+        Upload de vidéos disponible prochainement
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CHAT ===== -->
+  <div id="page-chat" class="page">
+    <header class="app-header">
+      <div class="header-logo"><i class="fas fa-crown"></i><span>Messages</span></div>
+    </header>
+    <div id="chat-list-view">
+      <div class="chat-list" id="chat-list"></div>
+    </div>
+    <div id="chat-window-view" class="hidden">
+      <div id="chat-window-header" class="app-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <i class="fas fa-arrow-left" style="cursor:pointer;color:var(--text-secondary);" onclick="closeChatWindow()"></i>
+          <div id="chat-window-avatar" class="chat-avatar" style="width:38px;height:38px;font-size:15px;"></div>
+          <div>
+            <div id="chat-window-name" style="font-weight:700;font-size:15px;"></div>
+            <div style="font-size:11px;color:var(--success);">En ligne</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-window">
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-bar">
+          <input class="chat-msg-input" id="chat-msg-input" placeholder="Message..." onkeydown="chatKeydown(event)">
+          <button class="send-btn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTIFICATIONS ===== -->
+  <div id="page-notifs" class="page">
+    <header class="app-header">
+      <div class="header-logo"><i class="fas fa-crown"></i><span>Notifications</span></div>
+    </header>
+    <div id="notifs-list"></div>
+  </div>
+
+  <!-- ===== PROFILE ===== -->
+  <div id="page-profile" class="page">
+    <header class="app-header">
+      <span id="profile-header-name" style="font-size:18px;font-weight:800;">@pseudo</span>
+      <i class="fas fa-cog" style="color:var(--text-secondary);font-size:20px;cursor:pointer;" onclick="openSettings()"></i>
+    </header>
+    <div class="profile-header">
+      <div class="profile-avatar-large">
+        <div class="profile-avatar-inner" id="profile-avatar">?</div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat" onclick="showMyPosts()">
+          <span class="stat-value" id="stat-posts">0</span>
+          <span class="stat-label">Posts</span>
+        </div>
+        <div class="stat" onclick="showFollowersList()">
+          <span class="stat-value" id="stat-followers">0</span>
+          <span class="stat-label">Followers</span>
+        </div>
+        <div class="stat" onclick="showFollowingList()">
+          <span class="stat-value" id="stat-following">0</span>
+          <span class="stat-label">Following</span>
+        </div>
+      </div>
+      <h2 class="profile-name" id="profile-name">Nom</h2>
+      <p class="profile-handle" id="profile-handle">@pseudo</p>
+      <p class="profile-bio" id="profile-bio">Ajouter une bio...</p>
+      <div class="profile-clan hidden" id="profile-clan">
+        <i class="fas fa-shield-alt"></i> <span id="clan-name">Clan</span>
+      </div>
+      <div class="profile-actions">
+        <button class="edit-profile-btn" onclick="openEditModal()">Modifier le profil</button>
+      </div>
+    </div>
+    <div class="profile-tabs">
+      <div class="profile-tab active" onclick="switchProfileTab(this,'posts')"><i class="fas fa-th-large"></i> Posts</div>
+      <div class="profile-tab" onclick="switchProfileTab(this,'favorites')"><i class="far fa-bookmark"></i> Favoris</div>
+    </div>
+    <div id="profile-content-area"></div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="navigate('home')">
+      <i class="fas fa-home"></i><span>Home</span>
+    </button>
+    <button class="nav-item" onclick="navigate('explore')">
+      <i class="fas fa-search"></i><span>Explore</span>
+    </button>
+    <button class="nav-item" onclick="navigate('create')">
+      <i class="fas fa-plus-square"></i><span>Créer</span>
+    </button>
+    <button class="nav-item" onclick="navigate('loop')">
+      <i class="fas fa-play-circle"></i><span>Loop</span>
+    </button>
+    <button class="nav-item" onclick="navigate('chat')">
+      <i class="far fa-comment-dots"></i><span>Chat</span>
+    </button>
+    <button class="nav-item" onclick="navigate('profile')">
+      <i class="far fa-user"></i><span>Profil</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ===== SETTINGS MODAL ===== -->
+<div id="settings-modal" class="modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <h3 style="font-size:18px;font-weight:800;margin-bottom:18px;">Paramètres</h3>
+    <div class="setting-item" onclick="openEditModal();closeSettings();">
+      <div class="setting-item-left"><i class="fas fa-user-edit"></i><span>Modifier le profil</span></div>
+      <i class="fas fa-chevron-right setting-item-right"></i>
+    </div>
+    <div class="setting-item" onclick="changePassword()">
+      <div class="setting-item-left"><i class="fas fa-lock"></i><span>Changer le mot de passe</span></div>
+      <i class="fas fa-chevron-right setting-item-right"></i>
+    </div>
+    <div class="setting-item" onclick="showFollowersList()">
+      <div class="setting-item-left"><i class="fas fa-users"></i><span>Mes Followers</span></div>
+      <span class="setting-item-right" id="settings-followers-count">0</span>
+    </div>
+    <div class="setting-item" onclick="showFollowingList()">
+      <div class="setting-item-left"><i class="fas fa-user-check"></i><span>Mes Abonnements</span></div>
+      <span class="setting-item-right" id="settings-following-count">0</span>
+    </div>
+    <div class="setting-item" onclick="logout()" style="margin-top:10px;">
+      <div class="setting-item-left"><i class="fas fa-sign-out-alt danger"></i><span class="danger">Se déconnecter</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EDIT PROFILE MODAL ===== -->
+<div id="edit-modal" class="modal modal-center">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>✏️ Modifier le profil</h3>
+      <button class="close-modal" onclick="closeEditModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:14px;">
+        <label>Nom affiché</label>
+        <input type="text" id="edit-displayname" placeholder="Ton nom">
+      </div>
+      <div class="form-group" style="margin-bottom:14px;">
+        <label>Bio</label>
+        <textarea id="edit-bio" style="min-height:80px;" placeholder="Parle de toi..."></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:20px;">
+        <label>Clan</label>
+        <input type="text" id="edit-clan" placeholder="Ton clan">
+      </div>
+      <button class="btn-primary" onclick="saveProfile()"><i class="fas fa-check"></i> Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOLLOWERS / FOLLOWING MODAL ===== -->
+<div id="follow-list-modal" class="modal modal-center">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="follow-list-title">Followers</h3>
+      <button class="close-modal" onclick="closeFollowListModal()">×</button>
+    </div>
+    <div class="modal-body" id="follow-list-body" style="max-height:60vh;overflow-y:auto;padding:10px 20px;"></div>
+  </div>
+</div>
+
+<!-- ===== VIEW USER PROFILE MODAL ===== -->
+<div id="view-profile-modal" class="modal modal-center">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="view-profile-title">Profil</h3>
+      <button class="close-modal" onclick="closeViewProfile()">×</button>
+    </div>
+    <div class="view-profile-content" id="view-profile-body"></div>
+  </div>
+</div>
+
+<!-- ===== COMMENTS MODAL ===== -->
+<div id="comments-modal" class="modal">
+  <div class="modal-sheet" style="max-height:85vh;">
+    <div class="modal-handle"></div>
+    <h3 style="font-size:17px;font-weight:800;margin-bottom:14px;">Commentaires</h3>
+    <div id="comments-list" class="comments-list"></div>
+    <div class="comment-input-wrapper">
+      <div id="comment-my-avatar" class="comment-avatar" style="flex-shrink:0;"></div>
+      <input class="comment-input" id="comment-input" placeholder="Ajoute un commentaire..." onkeydown="commentKeydown(event)">
+      <button class="send-btn" onclick="submitComment()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NOTIFICATIONS MODAL ===== -->
+<div id="notifs-modal" class="modal">
+  <div class="modal-sheet" style="max-height:85vh;">
+    <div class="modal-handle"></div>
+    <h3 style="font-size:17px;font-weight:800;margin-bottom:14px;">Notifications</h3>
+    <div id="notifs-modal-list"></div>
+  </div>
+</div>
+
+<script>
+// ==================== STORAGE ====================
+const Storage = {
+  users: JSON.parse(localStorage.getItem('lordimperial_users')) || [],
+  posts: JSON.parse(localStorage.getItem('lordimperial_posts')) || [],
+  notifications: JSON.parse(localStorage.getItem('lordimperial_notifs')) || [],
+  chats: JSON.parse(localStorage.getItem('lordimperial_chats')) || {},
+  currentUser: JSON.parse(localStorage.getItem('lordimperial_currentUser')) || null,
+
+  saveUsers() { localStorage.setItem('lordimperial_users', JSON.stringify(this.users)); },
+  savePosts() { localStorage.setItem('lordimperial_posts', JSON.stringify(this.posts)); },
+  saveNotifs() { localStorage.setItem('lordimperial_notifs', JSON.stringify(this.notifications)); },
+  saveChats() { localStorage.setItem('lordimperial_chats', JSON.stringify(this.chats)); },
+  saveCurrentUser() { localStorage.setItem('lordimperial_currentUser', JSON.stringify(this.currentUser)); },
+
+  addUser(user) { this.users.push(user); this.saveUsers(); },
+  addPost(post) { this.posts.unshift(post); this.savePosts(); },
+  addNotif(notif) { this.notifications.unshift(notif); this.saveNotifs(); },
+  updateUser(updatedUser) {
+    const idx = this.users.findIndex(u => u.id === updatedUser.id);
+    if (idx !== -1) { this.users[idx] = updatedUser; this.saveUsers(); }
+    if (this.currentUser && this.currentUser.id === updatedUser.id) {
+      this.currentUser = updatedUser; this.saveCurrentUser();
+    }
+  }
+};
+
+// Simple hash (XOR + base64, not cryptographic but avoids plain text)
+function hashPassword(str) {
+  let out = '';
+  for (let i = 0; i < str.length; i++) out += String.fromCharCode(str.charCodeAt(i) ^ 73);
+  return btoa(out);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
+function timeAgo(isoDate) {
+  const diff = (Date.now() - new Date(isoDate)) / 1000;
+  if (diff < 60) return 'À l\'instant';
+  if (diff < 3600) return Math.floor(diff/60) + ' min';
+  if (diff < 86400) return Math.floor(diff/3600) + ' h';
+  if (diff < 604800) return Math.floor(diff/86400) + ' j';
+  return Math.floor(diff/604800) + ' sem';
+}
+
+// ==================== TOAST ====================
+function showToast(msg, type='info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity 0.3s'; }, 2200);
+  setTimeout(() => toast.remove(), 2600);
+}
+
+// ==================== AUTH ====================
+function showPage(page) {
+  document.querySelectorAll('.auth-container').forEach(el => el.classList.add('hidden'));
+  const p = document.getElementById('page-' + page);
+  if (p) { p.classList.remove('hidden'); }
+}
+
+function togglePassword(inputId) {
+  const input = document.getElementById(inputId);
+  const btn = input.nextElementSibling.querySelector('i');
+  if (input.type === 'password') { input.type='text'; btn.className='far fa-eye-slash'; }
+  else { input.type='password'; btn.className='far fa-eye'; }
+}
+
+function formatUsername(input) {
+  let val = input.value.replace(/[^a-zA-Z0-9_@]/g,'');
+  if (!val.startsWith('@') && val.length > 0) val = '@' + val;
+  input.value = val;
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display='block';
+  setTimeout(() => el.style.display='none', 4000);
+}
+
+function showSuccessEl(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display='block';
+}
+
+function loginDemo() {
+  document.getElementById('login-email').value = 'demo@lord.imperial';
+  document.getElementById('login-password').value = 'demo123';
+  document.querySelector('#page-login form').dispatchEvent(new Event('submit', {cancelable:true}));
+}
+
+function handleRegister(e) {
+  e.preventDefault();
+  const email = document.getElementById('reg-email').value.trim();
+  let username = document.getElementById('reg-username').value.trim();
+  const clan = document.getElementById('reg-clan').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirm = document.getElementById('reg-confirm').value;
+
+  if (!username.startsWith('@')) username = '@' + username;
+  if (username.length < 3) return showError('register-error','Pseudo trop court');
+  if (password !== confirm) return showError('register-error','Les mots de passe ne correspondent pas');
+  if (password.length < 6) return showError('register-error','Mot de passe trop court (6 caractères min)');
+  if (Storage.users.find(u => u.email === email)) return showError('register-error','Email déjà utilisé');
+  if (Storage.users.find(u => u.username.toLowerCase() === username.toLowerCase())) return showError('register-error','Pseudo déjà pris');
+
+  const user = {
+    id: 'user_' + Date.now(),
+    email, username,
+    displayName: username.substring(1),
+    clan: clan || null, password: hashPassword(password),
+    bio: '', followers: [], following: [],
+    bookmarks: [], createdAt: new Date().toISOString()
+  };
+  Storage.addUser(user);
+  showSuccessEl('register-success','Compte créé ! Connexion...');
+  setTimeout(() => { Storage.currentUser = user; Storage.saveCurrentUser(); initApp(); }, 1200);
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const identifier = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  let user = Storage.users.find(u => u.email === identifier || u.username === identifier || u.username === '@'+identifier);
+
+  if (!user) {
+    if (identifier === 'demo@lord.imperial' || identifier === '@demo' || identifier === 'demo') {
+      user = {
+        id: 'demo', email: 'demo@lord.imperial', username: '@demo',
+        displayName: 'Lord Demo', clan: 'Imperial Guards',
+        password: hashPassword('demo123'), bio: 'Compte de démonstration 👑',
+        followers: [], following: [], bookmarks: [], createdAt: new Date().toISOString()
+      };
+      if (!Storage.users.find(u => u.id === 'demo')) Storage.addUser(user);
+      else user = Storage.users.find(u => u.id === 'demo');
+    } else {
+      return showError('login-error','Utilisateur introuvable');
+    }
+  }
+
+  if (user.password !== hashPassword(password)) return showError('login-error','Mot de passe incorrect');
+
+  Storage.currentUser = user;
+  Storage.saveCurrentUser();
+  initApp();
+}
+
+function logout() {
+  closeSettings();
+  Storage.currentUser = null;
+  localStorage.removeItem('lordimperial_currentUser');
+  document.getElementById('app').style.display='none';
+  document.querySelectorAll('.auth-container').forEach(el => el.classList.add('hidden'));
+  showPage('login');
+  showToast('À bientôt !', 'info');
+}
+
+// ==================== APP ====================
+function initApp() {
+  document.querySelectorAll('.auth-container').forEach(el => el.classList.add('hidden'));
+  document.getElementById('app').style.display='block';
+  updateProfileUI();
+  loadStories();
+  loadFeed();
+  loadChatList();
+  loadNotifsList();
+  checkNotifBadge();
+  navigate('home');
+}
+
+function updateProfileUI() {
+  const user = Storage.currentUser;
+  if (!user) return;
+  const init = getInitial(user);
+  document.getElementById('profile-header-name').textContent = user.username;
+  document.getElementById('profile-name').textContent = user.displayName || user.username.substring(1);
+  document.getElementById('profile-handle').textContent = user.username;
+  document.getElementById('profile-bio').textContent = user.bio || 'Ajouter une bio...';
+  document.getElementById('profile-avatar').textContent = init;
+  const userPosts = Storage.posts.filter(p => p.authorId === user.id);
+  document.getElementById('stat-posts').textContent = userPosts.length;
+  document.getElementById('stat-followers').textContent = user.followers.length;
+  document.getElementById('stat-following').textContent = user.following.length;
+  document.getElementById('settings-followers-count').textContent = user.followers.length;
+  document.getElementById('settings-following-count').textContent = user.following.length;
+  const clanEl = document.getElementById('profile-clan');
+  if (user.clan) {
+    clanEl.classList.remove('hidden');
+    document.getElementById('clan-name').textContent = user.clan;
+  } else clanEl.classList.add('hidden');
+  const myAvatar = document.getElementById('my-story-avatar');
+  myAvatar.innerHTML = `<span style="color:white;font-size:22px;font-weight:800;">${init}</span>`;
+}
+
+function getInitial(user) {
+  return ((user.displayName || user.username || '?')[1] || (user.displayName || user.username || '?')[0] || '?').toUpperCase();
+}
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+  const navMap = {home:0, explore:1, create:2, loop:3, chat:4, profile:5};
+  const navItems = document.querySelectorAll('.nav-item');
+  if (navMap[page] !== undefined && navItems[navMap[page]]) {
+    navItems[navMap[page]].classList.add('active');
+  }
+  if (page === 'profile') updateProfileUI();
+  if (page === 'home') loadFeed(currentTab);
+  if (page === 'notifs') { loadNotifsList(); markNotifsRead(); }
+  if (page === 'chat') { loadChatList(); closeChatWindow(); }
+  window.scrollTo(0,0);
+}
+
+let currentTab = 'for-you';
+function switchTab(el, tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  loadFeed(tab);
+}
+
+function switchProfileTab(el, tab) {
+  document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const area = document.getElementById('profile-content-area');
+  const user = Storage.currentUser;
+  if (tab === 'posts') {
+    const posts = Storage.posts.filter(p => p.authorId === user.id);
+    if (posts.length === 0) {
+      area.innerHTML = `<div class="profile-empty"><i class="fas fa-camera"></i><p>Aucune publication</p><button class="btn-primary" style="max-width:200px;margin:0 auto;" onclick="navigate('create')"><i class="fas fa-plus"></i> Créer un post</button></div>`;
+    } else {
+      area.innerHTML = `<div class="profile-grid">${posts.map(p => `
+        <div class="profile-grid-item">
+          ${p.image ? `<img src="${p.image}" alt="">` : `<div class="profile-grid-item-placeholder"><i class="fas fa-file-alt"></i><span>${escapeHtml(p.title||'').substring(0,10)}</span></div>`}
+        </div>`).join('')}</div>`;
+    }
+  } else {
+    const bookmarked = Storage.posts.filter(p => (user.bookmarks||[]).includes(p.id));
+    if (bookmarked.length === 0) {
+      area.innerHTML = `<div class="profile-empty"><i class="far fa-bookmark"></i><p>Aucun favori</p></div>`;
+    } else {
+      area.innerHTML = `<div class="profile-grid">${bookmarked.map(p => `
+        <div class="profile-grid-item">
+          ${p.image ? `<img src="${p.image}" alt="">` : `<div class="profile-grid-item-placeholder"><i class="fas fa-file-alt"></i><span>${escapeHtml(p.title||'').substring(0,10)}</span></div>`}
+        </div>`).join('')}</div>`;
+    }
+  }
+}
+
+// ==================== FEED ====================
+function loadFeed(tab='for-you') {
+  const feed = document.getElementById('feed');
+  let posts = [...Storage.posts];
+  if (tab === 'following') {
+    const following = Storage.currentUser.following;
+    posts = posts.filter(p => following.includes(p.authorId) || p.authorId === Storage.currentUser.id);
+  }
+  if (posts.length === 0) {
+    feed.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>${tab==='following'?'Abonne-toi à des utilisateurs pour voir leurs posts':'Aucun post pour le moment'}</p><button class="btn-primary" style="max-width:220px;margin:0 auto;" onclick="navigate('create')"><i class="fas fa-plus"></i> Créer le premier post</button></div>`;
+  } else {
+    feed.innerHTML = posts.map(p => createPostHTML(p)).join('');
+  }
+}
+
+function createPostHTML(post) {
+  const author = Storage.users.find(u => u.id === post.authorId) || {username:'@inconnu', displayName:'Inconnu', id:'?'};
+  const isLiked = post.likes.includes(Storage.currentUser.id);
+  const isBookmarked = (Storage.currentUser.bookmarks||[]).includes(post.id);
+  const init = getInitial(author);
+  const badgeClass = post.badge && post.badge.includes('Imperial') ? 'gold' : (post.badge && post.badge.includes('Clan') ? 'purple' : '');
+  const hasImage = !!post.image;
+  return `
+    <div class="post" data-post-id="${post.id}">
+      <div class="post-header">
+        <div class="post-user">
+          <div class="post-avatar" onclick="viewProfile('${author.id}')">${init}</div>
+          <div class="post-info">
+            <h3 onclick="viewProfile('${author.id}')">${escapeHtml(author.displayName||author.username.substring(1))}
+              ${post.verified ? '<i class="fas fa-check-circle verified" title="Vérifié"></i>' : ''}
+              ${author.id==='demo'||author.clan?'<i class="fas fa-crown imperial-badge" title="Lord Impérial"></i>':''}
+            </h3>
+            <span>${escapeHtml(author.username)} · ${timeAgo(post.createdAt)}</span>
+          </div>
+        </div>
+        <div class="post-menu"><i class="fas fa-ellipsis-h"></i></div>
+      </div>
+      <div class="post-content${hasImage?'':' no-image'}">
+        ${hasImage ? `<img src="${post.image}" alt="" loading="lazy">` : ''}
+        <div class="${hasImage?'post-overlay':'no-image-content'}">
+          ${post.title ? `<div class="post-title">${escapeHtml(post.title)}</div>` : ''}
+          <p class="post-text">${escapeHtml(post.content)}</p>
+          ${post.badge ? `<span class="post-badge ${badgeClass}">${escapeHtml(post.badge)}</span>` : ''}
+        </div>
+      </div>
+      <div class="post-actions">
+        <div class="post-actions-left">
+          <button class="action-btn ${isLiked?'liked':''}" onclick="toggleLike('${post.id}')">
+            <i class="${isLiked?'fas':'far'} fa-heart"></i>
+            <span>${post.likes.length}</span>
+          </button>
+          <button class="action-btn" onclick="openComments('${post.id}')">
+            <i class="far fa-comment"></i>
+            <span>${post.comments.length}</span>
+          </button>
+          <button class="action-btn" onclick="sharePost('${post.id}')">
+            <i class="fas fa-share"></i>
+          </button>
+        </div>
+        <button class="action-btn ${isBookmarked?'bookmarked':''}" onclick="toggleBookmark('${post.id}')">
+          <i class="${isBookmarked?'fas':'far'} fa-bookmark"></i>
+        </button>
+      </div>
+    </div>`;
+}
+
+// ==================== POST ACTIONS ====================
+function toggleLike(postId) {
+  const post = Storage.posts.find(p => p.id === postId);
+  if (!post) return;
+  const uid = Storage.currentUser.id;
+  const idx = post.likes.indexOf(uid);
+  if (idx === -1) {
+    post.likes.push(uid);
+    if (post.authorId !== uid) {
+      const author = Storage.users.find(u => u.id === post.authorId);
+      addNotification({
+        type:'like', targetId: post.authorId,
+        text: `<strong>${escapeHtml(Storage.currentUser.displayName||Storage.currentUser.username)}</strong> a aimé ton post "${escapeHtml(post.title||post.content.substring(0,20))}"`
+      });
+    }
+  } else {
+    post.likes.splice(idx,1);
+  }
+  Storage.savePosts();
+  loadFeed(currentTab);
+}
+
+function toggleBookmark(postId) {
+  const user = Storage.currentUser;
+  if (!user.bookmarks) user.bookmarks = [];
+  const idx = user.bookmarks.indexOf(postId);
+  if (idx === -1) { user.bookmarks.push(postId); showToast('Ajouté aux favoris 🔖','info'); }
+  else { user.bookmarks.splice(idx,1); showToast('Retiré des favoris','info'); }
+  Storage.updateUser(user);
+  loadFeed(currentTab);
+}
+
+function sharePost(postId) {
+  const link = window.location.href.split('?')[0] + '?post=' + postId;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => showToast('Lien copié ! 🔗','success'));
+  } else showToast('Lien : ' + link,'info');
+}
+
+// ==================== COMMENTS ====================
+let activePostId = null;
+
+function openComments(postId) {
+  activePostId = postId;
+  renderComments();
+  const user = Storage.currentUser;
+  document.getElementById('comment-my-avatar').textContent = getInitial(user);
+  document.getElementById('comments-modal').classList.add('active');
+}
+
+function closeComments() {
+  document.getElementById('comments-modal').classList.remove('active');
+  activePostId = null;
+}
+
+function renderComments() {
+  const post = Storage.posts.find(p => p.id === activePostId);
+  if (!post) return;
+  const list = document.getElementById('comments-list');
+  if (post.comments.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:13px;">Sois le premier à commenter !</div>`;
+    return;
+  }
+  list.innerHTML = post.comments.map(c => {
+    const author = Storage.users.find(u => u.id === c.authorId) || {username:'@?',displayName:'?'};
+    return `<div class="comment">
+      <div class="comment-avatar">${getInitial(author)}</div>
+      <div class="comment-bubble">
+        <div class="comment-author">${escapeHtml(author.displayName||author.username)}</div>
+        <div class="comment-text">${escapeHtml(c.text)}</div>
+        <div class="comment-time">${timeAgo(c.createdAt)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  list.scrollTop = list.scrollHeight;
+}
+
+function commentKeydown(e) { if (e.key === 'Enter') submitComment(); }
+
+function submitComment() {
+  const input = document.getElementById('comment-input');
+  const text = input.value.trim();
+  if (!text || !activePostId) return;
+  const post = Storage.posts.find(p => p.id === activePostId);
+  if (!post) return;
+  const comment = {
+    id: 'c_' + Date.now(), authorId: Storage.currentUser.id,
+    text, createdAt: new Date().toISOString()
+  };
+  post.comments.push(comment);
+  Storage.savePosts();
+  input.value = '';
+  renderComments();
+  if (post.authorId !== Storage.currentUser.id) {
+    addNotification({
+      type:'comment', targetId: post.authorId,
+      text: `<strong>${escapeHtml(Storage.currentUser.displayName||Storage.currentUser.username)}</strong> a commenté ton post : "${escapeHtml(text.substring(0,30))}"`
+    });
+  }
+}
+
+// ==================== CREATE POST ====================
+let selectedBadge = '';
+
+function selectBadge(btn, badge) {
+  document.querySelectorAll('.badge-option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedBadge = badge;
+}
+
+function updateCharCount(el) {
+  document.getElementById('char-count').textContent = el.value.length;
+}
+
+function previewImage(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('post-preview-img').src = e.target.result;
+      document.getElementById('image-preview-wrap').style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function removeImage() {
+  document.getElementById('post-image').value = '';
+  document.getElementById('image-preview-wrap').style.display = 'none';
+}
+
+function createPost() {
+  const title = document.getElementById('post-title').value.trim();
+  const content = document.getElementById('post-content').value.trim();
+  const imageInput = document.getElementById('post-image');
+  if (!title && !content) { showToast('Ajoute un titre ou du contenu !','error'); return; }
+  if (imageInput.files && imageInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => savePost(title, content, e.target.result);
+    reader.readAsDataURL(imageInput.files[0]);
+  } else savePost(title, content, null);
+}
+
+function savePost(title, content, image) {
+  const post = {
+    id: 'post_' + Date.now(),
+    authorId: Storage.currentUser.id,
+    title: title || 'Nouveau post',
+    content: content || '',
+    image, badge: selectedBadge || null,
+    likes: [], comments: [],
+    verified: Storage.currentUser.id === 'demo',
+    createdAt: new Date().toISOString()
+  };
+  Storage.addPost(post);
+  document.getElementById('post-title').value = '';
+  document.getElementById('post-content').value = '';
+  document.getElementById('char-count').textContent = '0';
+  document.getElementById('post-image').value = '';
+  document.getElementById('image-preview-wrap').style.display = 'none';
+  selectedBadge = '';
+  document.querySelectorAll('.badge-option').forEach(b => b.classList.remove('selected'));
+  updateProfileUI();
+  showToast('Post publié ! 🎉','success');
+  navigate('home');
+  loadFeed();
+}
+
+// ==================== STORIES ====================
+const demoStories = [
+  {name:'MagmaDeath', color:'linear-gradient(135deg,#667eea,#764ba2)'},
+  {name:'Sasuke', color:'linear-gradient(135deg,#4a90e2,#1a237e)'},
+  {name:'BenjaminUC', color:'linear-gradient(135deg,#50c878,#1a6b2e)'},
+  {name:'Daniel', color:'linear-gradient(135deg,#ff6b6b,#8b0000)'}
+];
+
+function loadStories() {
+  const container = document.getElementById('stories-list');
+  const myBtn = container.firstElementChild;
+  container.innerHTML = '';
+  container.appendChild(myBtn);
+  demoStories.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'story';
+    div.onclick = () => showToast(`Story de ${s.name} 👑`,'info');
+    div.innerHTML = `
+      <div class="story-avatar">
+        <div class="story-avatar-inner" style="background:${s.color};color:white;font-size:20px;">
+          ${s.name[0].toUpperCase()}
+        </div>
+      </div>
+      <span class="story-name">${s.name}</span>`;
+    container.appendChild(div);
+  });
+  Storage.users.filter(u => u.id !== Storage.currentUser.id).slice(0,4).forEach(u => {
+    const div = document.createElement('div');
+    div.className = 'story';
+    div.onclick = () => showToast(`Story de ${u.displayName||u.username} 👑`,'info');
+    div.innerHTML = `
+      <div class="story-avatar">
+        <div class="story-avatar-inner" style="background:linear-gradient(45deg,var(--primary),var(--secondary));color:white;font-size:20px;">
+          ${getInitial(u)}
+        </div>
+      </div>
+      <span class="story-name">${escapeHtml((u.displayName||u.username).substring(0,10))}</span>`;
+    container.appendChild(div);
+  });
+}
+
+function myAddStory() { showToast('Upload de story bientôt disponible 📸','info'); }
+
+// ==================== PROFILE ====================
+function openSettings() { document.getElementById('settings-modal').classList.add('active'); }
+function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); }
+
+function openEditModal() {
+  const user = Storage.currentUser;
+  document.getElementById('edit-displayname').value = user.displayName||'';
+  document.getElementById('edit-bio').value = user.bio||'';
+  document.getElementById('edit-clan').value = user.clan||'';
+  document.getElementById('edit-modal').classList.add('active');
+}
+function closeEditModal() { document.getElementById('edit-modal').classList.remove('active'); }
+
+function saveProfile() {
+  const displayName = document.getElementById('edit-displayname').value.trim();
+  const bio = document.getElementById('edit-bio').value.trim();
+  const clan = document.getElementById('edit-clan').value.trim();
+  const user = {...Storage.currentUser};
+  if (displayName) user.displayName = displayName;
+  user.bio = bio;
+  user.clan = clan || null;
+  Storage.updateUser(user);
+  closeEditModal();
+  updateProfileUI();
+  showToast('Profil mis à jour ✅','success');
+}
+
+function changePassword() {
+  closeSettings();
+  setTimeout(() => {
+    const newPass = prompt('Nouveau mot de passe (6 caractères min) :');
+    if (!newPass) return;
+    if (newPass.length < 6) { showToast('Trop court (6 min)','error'); return; }
+    const user = {...Storage.currentUser, password: hashPassword(newPass)};
+    Storage.updateUser(user);
+    showToast('Mot de passe modifié ✅','success');
+  }, 300);
+}
+
+function showMyPosts() { switchProfileTab(document.querySelectorAll('.profile-tab')[0], 'posts'); }
+
+function showFollowersList() {
+  closeSettings();
+  const user = Storage.currentUser;
+  const followers = Storage.users.filter(u => user.followers.includes(u.id));
+  document.getElementById('follow-list-title').textContent = `Followers (${followers.length})`;
+  document.getElementById('follow-list-body').innerHTML = followers.length === 0
+    ? '<p style="text-align:center;color:var(--text-secondary);padding:20px;">Aucun follower pour le moment</p>'
+    : followers.map(u => `
+      <div class="follow-list-item">
+        <div class="follow-list-avatar">${getInitial(u)}</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:14px;">${escapeHtml(u.displayName||u.username)}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">${escapeHtml(u.username)}</div>
+        </div>
+        <button class="follow-chip ${user.following.includes(u.id)?'following':''}" onclick="toggleFollow('${u.id}',this)">
+          ${user.following.includes(u.id)?'Abonné':'Suivre'}
+        </button>
+      </div>`).join('');
+  document.getElementById('follow-list-modal').classList.add('active');
+}
+
+function showFollowingList() {
+  closeSettings();
+  const user = Storage.currentUser;
+  const following = Storage.users.filter(u => user.following.includes(u.id));
+  document.getElementById('follow-list-title').textContent = `Abonnements (${following.length})`;
+  document.getElementById('follow-list-body').innerHTML = following.length === 0
+    ? '<p style="text-align:center;color:var(--text-secondary);padding:20px;">Aucun abonnement</p>'
+    : following.map(u => `
+      <div class="follow-list-item">
+        <div class="follow-list-avatar">${getInitial(u)}</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:14px;">${escapeHtml(u.displayName||u.username)}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">${escapeHtml(u.username)}</div>
+        </div>
+        <button class="follow-chip following" onclick="toggleFollow('${u.id}',this)">Abonné</button>
+      </div>`).join('');
+  document.getElementById('follow-list-modal').classList.add('active');
+}
+
+function closeFollowListModal() { document.getElementById('follow-list-modal').classList.remove('active'); }
+
+// ==================== FOLLOW SYSTEM ====================
+function toggleFollow(targetId, btn) {
+  const user = {...Storage.currentUser};
+  const target = Storage.users.find(u => u.id === targetId);
+  if (!target) return;
+  if (!user.following) user.following = [];
+  if (!target.followers) target.followers = [];
+  const isFollowing = user.following.includes(targetId);
+  if (isFollowing) {
+    user.following = user.following.filter(id => id !== targetId);
+    target.followers = target.followers.filter(id => id !== user.id);
+    if (btn) { btn.textContent='Suivre'; btn.classList.remove('following'); }
+    showToast(`Désabonné de ${target.displayName||target.username}`,'info');
+  } else {
+    user.following.push(targetId);
+    target.followers.push(user.id);
+    if (btn) { btn.textContent='Abonné'; btn.classList.add('following'); }
+    showToast(`Abonné à ${target.displayName||target.username} 👑`,'success');
+    addNotification({
+      type:'follow', targetId,
+      text:`<strong>${escapeHtml(user.displayName||user.username)}</strong> s'est abonné à toi`
+    });
+  }
+  Storage.updateUser(user);
+  Storage.updateUser(target);
+  updateProfileUI();
+  searchUsers(document.getElementById('search-input')?.value||'');
+}
+
+// ==================== EXPLORE ====================
+function searchUsers(query) {
+  const results = document.getElementById('search-results');
+  const user = Storage.currentUser;
+  if (!query.trim()) { results.innerHTML = ''; return; }
+  const found = Storage.users.filter(u =>
+    u.id !== user.id &&
+    (u.username.toLowerCase().includes(query.toLowerCase()) ||
+    (u.displayName||'').toLowerCase().includes(query.toLowerCase()))
+  );
+  if (found.length === 0) {
+    results.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:30px;font-size:14px;">Aucun utilisateur trouvé</p>';
+    return;
+  }
+  results.innerHTML = `<div style="background:var(--card);border-radius:14px;border:1px solid var(--border);overflow:hidden;">${
+    found.map(u => {
+      const isFollowing = (user.following||[]).includes(u.id);
+      return `<div class="user-card" onclick="viewProfile('${u.id}')">
+        <div class="user-card-avatar">${getInitial(u)}</div>
+        <div class="user-card-info">
+          <div class="user-card-name">${escapeHtml(u.displayName||u.username)}</div>
+          <div class="user-card-username">${escapeHtml(u.username)}</div>
+          ${u.clan ? `<div class="user-card-clan">🛡️ ${escapeHtml(u.clan)}</div>` : ''}
+        </div>
+        <button class="follow-chip ${isFollowing?'following':''}" onclick="event.stopPropagation();toggleFollow('${u.id}',this)">
+          ${isFollowing?'Abonné':'Suivre'}
+        </button>
+      </div>`;
+    }).join('')}</div>`;
+}
+
+function viewProfile(userId) {
+  if (userId === Storage.currentUser.id) { navigate('profile'); return; }
+  const user = Storage.users.find(u => u.id === userId);
+  if (!user) return;
+  const me = Storage.currentUser;
+  const isFollowing = (me.following||[]).includes(userId);
+  const posts = Storage.posts.filter(p => p.authorId === userId);
+  document.getElementById('view-profile-title').textContent = user.username;
+  document.getElementById('view-profile-body').innerHTML = `
+    <div class="view-profile-header">
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(45deg,var(--primary),var(--secondary),var(--gold));padding:3px;margin:0 auto 12px;">
+        <div style="width:100%;height:100%;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;border:2px solid #000;">
+          ${getInitial(user)}
+        </div>
+      </div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:3px;">${escapeHtml(user.displayName||user.username)}</div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">${escapeHtml(user.username)}</div>
+      ${user.bio ? `<div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;">${escapeHtml(user.bio)}</div>` : ''}
+      ${user.clan ? `<div style="display:inline-flex;align-items:center;gap:5px;background:rgba(139,92,246,0.15);color:var(--secondary);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;">🛡️ ${escapeHtml(user.clan)}</div>` : ''}
+    </div>
+    <div class="view-profile-stats">
+      <div class="view-profile-stat">
+        <span class="view-profile-stat-value">${posts.length}</span>
+        <span class="view-profile-stat-label">Posts</span>
+      </div>
+      <div class="view-profile-stat">
+        <span class="view-profile-stat-value">${(user.followers||[]).length}</span>
+        <span class="view-profile-stat-label">Followers</span>
+      </div>
+      <div class="view-profile-stat">
+        <span class="view-profile-stat-value">${(user.following||[]).length}</span>
+        <span class="view-profile-stat-label">Following</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button class="follow-btn ${isFollowing?'following':''}" id="view-follow-btn" onclick="toggleFollow('${userId}', this)">
+        ${isFollowing?'<i class=\'fas fa-user-check\'></i> Abonné':'<i class=\'fas fa-user-plus\'></i> Suivre'}
+      </button>
+      <button class="btn-secondary" onclick="openChatWith('${userId}')">
+        <i class="fas fa-comment"></i> Message
+      </button>
+    </div>
+    ${posts.length > 0 ? `<div style="margin-top:16px;"><p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Publications</p><div class="profile-grid">${posts.slice(0,6).map(p=>`<div class="profile-grid-item">${p.image?`<img src="${p.image}" alt="">`:`<div class="profile-grid-item-placeholder"><i class="fas fa-file-alt"></i><span>${escapeHtml(p.title||'').substring(0,10)}</span></div>`}</div>`).join('')}</div></div>` : ''}
+  `;
+  document.getElementById('view-profile-modal').classList.add('active');
+}
+
+function closeViewProfile() { document.getElementById('view-profile-modal').classList.remove('active'); }
+
+// ==================== CHAT ====================
+let activeChatUserId = null;
+
+function loadChatList() {
+  const list = document.getElementById('chat-list');
+  const chats = Storage.chats;
+  const uid = Storage.currentUser.id;
+  const chatKeys = Object.keys(chats).filter(k => k.includes(uid));
+  if (chatKeys.length === 0) {
+    list.innerHTML = `<div class="empty-state"><i class="far fa-comment-dots"></i><p>Aucune conversation</p><p style="font-size:12px;">Abonne-toi à des utilisateurs et envoie-leur un message</p></div>`;
+    return;
+  }
+  list.innerHTML = chatKeys.map(key => {
+    const chat = chats[key];
+    const otherId = key.replace(uid,'').replace('_','').replace('_','');
+    const other = Storage.users.find(u => u.id === otherId) || {username:'@?',displayName:'?'};
+    const lastMsg = chat[chat.length-1];
+    return `<div class="chat-item" onclick="openChatWindow('${otherId}')">
+      <div class="chat-avatar">${getInitial(other)}</div>
+      <div class="chat-info">
+        <div class="chat-name">${escapeHtml(other.displayName||other.username)}</div>
+        <div class="chat-preview">${lastMsg ? escapeHtml(lastMsg.text.substring(0,40)) : 'Nouveau chat'}</div>
+      </div>
+      <div class="chat-time">${lastMsg ? timeAgo(lastMsg.createdAt) : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function openChatWith(userId) {
+  closeViewProfile();
+  navigate('chat');
+  setTimeout(() => openChatWindow(userId), 100);
+}
+
+function openChatWindow(userId) {
+  const other = Storage.users.find(u => u.id === userId);
+  if (!other) return;
+  activeChatUserId = userId;
+  document.getElementById('chat-window-name').textContent = other.displayName||other.username;
+  document.getElementById('chat-window-avatar').textContent = getInitial(other);
+  document.getElementById('chat-list-view').classList.add('hidden');
+  document.getElementById('chat-window-view').classList.remove('hidden');
+  renderChatMessages();
+}
+
+function closeChatWindow() {
+  activeChatUserId = null;
+  document.getElementById('chat-list-view').classList.remove('hidden');
+  document.getElementById('chat-window-view').classList.add('hidden');
+}
+
+function getChatKey(uid1, uid2) {
+  return [uid1,uid2].sort().join('_');
+}
+
+function renderChatMessages() {
+  const uid = Storage.currentUser.id;
+  const key = getChatKey(uid, activeChatUserId);
+  const msgs = Storage.chats[key] || [];
+  const container = document.getElementById('chat-messages');
+  if (msgs.length === 0) {
+    container.innerHTML = `<div style="text-align:center;color:var(--text-secondary);font-size:13px;padding:20px;">Envoie un message pour commencer 👑</div>`;
+    return;
+  }
+  container.innerHTML = msgs.map(m => `
+    <div class="msg-row ${m.authorId===uid?'mine':''}">
+      ${m.authorId!==uid?`<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(45deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">${getInitial(Storage.users.find(u=>u.id===m.authorId)||{username:'?'})}</div>`:''}
+      <div>
+        <div class="msg-bubble">${escapeHtml(m.text)}</div>
+        <div class="msg-time" style="text-align:${m.authorId===uid?'right':'left'}">${timeAgo(m.createdAt)}</div>
+      </div>
+    </div>`).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function chatKeydown(e) { if (e.key==='Enter') sendChatMessage(); }
+
+function sendChatMessage() {
+  const input = document.getElementById('chat-msg-input');
+  const text = input.value.trim();
+  if (!text || !activeChatUserId) return;
+  const uid = Storage.currentUser.id;
+  const key = getChatKey(uid, activeChatUserId);
+  if (!Storage.chats[key]) Storage.chats[key] = [];
+  Storage.chats[key].push({ id:'m_'+Date.now(), authorId: uid, text, createdAt: new Date().toISOString() });
+  Storage.saveChats();
+  input.value = '';
+  renderChatMessages();
+}
+
+// ==================== NOTIFICATIONS ====================
+function addNotification(notif) {
+  const n = {
+    id: 'n_' + Date.now(), ...notif, read: false,
+    createdAt: new Date().toISOString()
+  };
+  Storage.addNotif(n);
+  checkNotifBadge();
+}
+
+function checkNotifBadge() {
+  const unread = Storage.notifications.filter(n => !n.read).length;
+  const badge = document.getElementById('notif-badge');
+  const icon = document.getElementById('notif-icon');
+  if (unread > 0) {
+    badge.textContent = unread > 9 ? '9+' : unread;
+    badge.classList.remove('hidden');
+    icon.classList.add('fas');
+    icon.classList.remove('far');
+  } else {
+    badge.classList.add('hidden');
+    icon.classList.remove('fas');
+    icon.classList.add('far');
+  }
+}
+
+function markNotifsRead() {
+  Storage.notifications.forEach(n => n.read = true);
+  Storage.saveNotifs();
+  checkNotifBadge();
+}
+
+function loadNotifsList() {
+  const list = document.getElementById('notifs-list');
+  const notifs = Storage.notifications.filter(n => !n.targetId || n.targetId === Storage.currentUser.id);
+  if (notifs.length === 0) {
+    list.innerHTML = `<div class="empty-state"><i class="far fa-bell"></i><p>Aucune notification</p></div>`;
+    return;
+  }
+  list.innerHTML = notifs.map(n => {
+    const iconMap = { like:'fa-heart like', follow:'fa-user-plus follow', comment:'fa-comment comment' };
+    return `<div class="notif-item ${n.read?'':'unread'}">
+      <div class="notif-icon ${n.type}"><i class="fas ${(iconMap[n.type]||'fa-bell info').split(' ')[0]}"></i></div>
+      <div class="notif-content">
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-time">${timeAgo(n.createdAt)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ==================== INIT DATA ====================
+if (Storage.posts.length === 0) {
+  const demoPosts = [
+    { id:'post_demo1', authorId:'demo', title:'BIENVENUE SUR LORD-IMPERIAL', content:'Le nouveau réseau social de l\'empire 👑 Rejoignez la communauté !', badge:'Imperial Lord', image:null, likes:[], comments:[], verified:true, createdAt:new Date(Date.now()-3600000).toISOString() },
+    { id:'post_demo2', authorId:'demo', title:'SEASON 4 IS HERE', content:'La saison 4 commence maintenant. Prépare ton clan et domine l\'empire.', badge:'Top Clan', image:null, likes:[], comments:[{id:'c1',authorId:'demo',text:'Let\'s go 🔥',createdAt:new Date().toISOString()}], verified:true, createdAt:new Date(Date.now()-7200000).toISOString() }
+  ];
+  Storage.posts = demoPosts;
+  Storage.savePosts();
+}
+
+if (!Storage.users.find(u => u.id === 'demo')) {
+  Storage.addUser({
+    id:'demo', email:'demo@lord.imperial', username:'@demo',
+    displayName:'Lord Demo', clan:'Imperial Guards',
+    password: hashPassword('demo123'), bio:'Compte de démonstration 👑',
+    followers:[], following:[], bookmarks:[], createdAt:new Date().toISOString()
+  });
+}
+
+if (Storage.currentUser) initApp();
+else showPage('login');
+
+// ===== PWA SERVICE WORKER + INSTALL =====
+let deferredPrompt = null;
+let swRegistration = null;
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        swRegistration = reg;
+        console.log('[PWA] Service Worker registered:', reg.scope);
+        
+        // Check for updates
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateBanner();
+            }
+          });
+        });
+      })
+      .catch(err => console.log('[PWA] SW registration failed:', err));
+  });
+}
+
+// Capture install prompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBtn();
+});
+
+// App installed callback
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  hideInstallBtn();
+  console.log('[PWA] App installed successfully!');
+  if (typeof showToast === 'function') {
+    showToast('LORD-IMPERIAL installée ! 👑', 'success');
+  }
+});
+
+function showInstallBtn() {
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.style.display = 'flex';
+}
+
+function hideInstallBtn() {
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.style.display = 'none';
+}
+
+async function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log('[PWA] Install outcome:', outcome);
+  deferredPrompt = null;
+  hideInstallBtn();
+}
+
+// Offline/Online detection
+window.addEventListener('online', () => {
+  document.getElementById('pwa-offline-banner').classList.remove('show');
+  if (typeof showToast === 'function') showToast('Connexion rétablie 🌐', 'success');
+});
+
+window.addEventListener('offline', () => {
+  document.getElementById('pwa-offline-banner').classList.add('show');
+  if (typeof showToast === 'function') showToast('Mode hors-ligne 📵', 'error');
+});
+
+// Check initial state
+if (!navigator.onLine) {
+  document.getElementById('pwa-offline-banner').classList.add('show');
+}
+
+// Show update banner
+function showUpdateBanner() {
+  document.getElementById('pwa-update-banner').classList.add('show');
+}
+
+function applyUpdate() {
+  if (swRegistration && swRegistration.waiting) {
+    swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+  }
+  window.location.reload();
+}
+// ===== END PWA =====
+</script>
+</body>
+</html>
